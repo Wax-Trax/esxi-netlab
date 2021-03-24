@@ -1,0 +1,207 @@
+---
+lab_options:
+  lab_name: 3xSP-Lab1 # No spaces or special characters
+  term_serv: 10.138.138.11 # IP or DNS of serial console telnet server (ESXi)
+  esxi_username: root
+  tport_base: 20 # Range 2 - 65, becomes 2000 - 65000 and used with node number
+  datastore: NVMe-1TB # ESXi datastore: e.g. /vmfs/volumes/NVMe-1TB
+  vswitch: vSwitch1 # ESXi vSwitch that generated portgroups will attach to
+  pg_base: Lab # Base portgroup defined in vmx
+
+# Nodes format:
+# Node number (1 - 254): used as part of IP address generation
+#   hostname: used for config generation, no spaces or special characters
+#   platform: corresponds to platform_definitions.yaml file
+#   site: range 1 - 254, used as part of loopback IP address generation
+#   neighbors: specify up to 10 neighbors by node number (platform dependent)
+#     NOTE: Some platforms (like XRv9k) only support up to 7 neighbors based
+#           on ESXi vNIC limitation
+#     NOTE: Even if you only have a single neighbor, you must still put it
+#           in brackets
+
+nodes:
+  254:
+    hostname: IXP
+    platform: iosv
+    site: 254
+    neighbors: [11, 11, 11, 12, 21, 22, 31, 32]
+
+  11:
+    hostname: ASBR_1A
+    platform: xrv
+    site: 1
+    neighbors: [254, 254, 254, 12, 13, 14]
+
+  12:
+    hostname: ASBR_1B
+    platform: iosxe
+    site: 1
+    neighbors: [254, 11, 13, 14]
+
+  13:
+    hostname: P_1A
+    platform: xrv
+    site: 1
+    neighbors: [11, 12, 14, 15, 16]
+
+  14:
+    hostname: P_1B
+    platform: iosv
+    site: 1
+    neighbors: [11, 12, 13, 15, 16]
+
+  15:
+    hostname: RR_1A
+    platform: xrv
+    site: 1
+    neighbors: [13, 14, 16, 17, 18]
+
+  16:
+    hostname: RR_1B
+    platform: iosxe
+    site: 1
+    neighbors: [13, 14, 15, 17, 18]
+
+  17:
+    hostname: PE_1A
+    platform: xrv
+    site: 1
+    neighbors: [15, 16, 18, 111, 112]
+
+  18:
+    hostname: PE_1B
+    platform: iosxe
+    site: 1
+    neighbors: [15, 16, 17, 111, 112]
+
+  111:
+    hostname: CE_1A
+    platform: iosv
+    site: 110
+    neighbors: [112, 17, 18]
+
+  112:
+    hostname: CE_1B
+    platform: iosv
+    site: 110
+    neighbors: [111, 17, 18]
+
+  21:
+    hostname: ASBR_2A
+    platform: xrv
+    site: 2
+    neighbors: [254, 22, 23, 24]
+
+  22:
+    hostname: ASBR_2B
+    platform: iosxe
+    site: 2
+    neighbors: [254, 21, 23, 24]
+
+  23:
+    hostname: P_2A
+    platform: xrv
+    site: 2
+    neighbors: [21, 22, 24, 25, 26]
+
+  24:
+    hostname: P_2B
+    platform: iosv
+    site: 2
+    neighbors: [21, 22, 23, 25, 26]
+
+  25:
+    hostname: RR_2A
+    platform: xrv
+    site: 2
+    neighbors: [23, 24, 26, 27, 28]
+
+  26:
+    hostname: RR_2B
+    platform: iosxe
+    site: 2
+    neighbors: [23, 24, 25, 27, 28]
+
+  27:
+    hostname: PE_2A
+    platform: xrv
+    site: 2
+    neighbors: [25, 26, 28, 121, 122]
+
+  28:
+    hostname: PE_2B
+    platform: iosxe
+    site: 2
+    neighbors: [25, 26, 27, 121, 122]
+
+  121:
+    hostname: CE_2A
+    platform: iosv
+    site: 120
+    neighbors: [122, 27, 28]
+
+  122:
+    hostname: CE_2B
+    platform: iosv
+    site: 120
+    neighbors: [121, 27, 28]
+
+  31:
+    hostname: ASBR_3A
+    platform: xrv
+    site: 3
+    neighbors: [254, 32, 33, 34]
+
+  32:
+    hostname: ASBR_3B
+    platform: iosxe
+    site: 3
+    neighbors: [254, 31, 33, 34]
+
+  33:
+    hostname: P_3A
+    platform: xrv
+    site: 3
+    neighbors: [31, 32, 34, 35, 36]
+
+  34:
+    hostname: P_3B
+    platform: iosv
+    site: 3
+    neighbors: [31, 32, 33, 35, 36]
+
+  35:
+    hostname: RR_3A
+    platform: xrv
+    site: 3
+    neighbors: [33, 34, 36, 37, 38]
+
+  36:
+    hostname: RR_3B
+    platform: iosxe
+    site: 3
+    neighbors: [33, 34, 35, 37, 38]
+
+  37:
+    hostname: PE_3A
+    platform: xrv
+    site: 3
+    neighbors: [35, 36, 38, 131, 132]
+
+  38:
+    hostname: PE_3B
+    platform: iosxe
+    site: 3
+    neighbors: [35, 36, 37, 131, 132]
+
+  131:
+    hostname: CE_3A
+    platform: iosv
+    site: 130
+    neighbors: [132, 37, 38]
+
+  132:
+    hostname: CE_3B
+    platform: iosv
+    site: 130
+    neighbors: [131, 37, 38]

@@ -1,0 +1,17 @@
+{
+  "Profiles": [
+    {% for node in nodes %}
+    {
+      {%- if sort == "s" %}
+      "Tags" : ["{{ lab_name }} Site {{ node[3] }}"],
+      {%- endif %}
+      {%- if sort == "l" %}
+      "Tags" : ["{{ lab_name }}"],
+      {%- endif %}
+      "Initial Text" : "telnet {{ term_serv }} {{ node[1] }}",
+      "Name" : "{{ node[0] }}",
+      "Guid": "{{ node[2] }}"
+    },
+    {%- endfor %}
+  ]
+}
