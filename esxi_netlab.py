@@ -77,7 +77,7 @@ def main(options):
         render = lab_render(lab, interfaces, j2_file, output)
 
         # Push device configurations via telnet serial console
-        if vars(options)['node_config']:
+        if vars(options)['push_config']:
             input(
                 "\n\n--> Please ensure all lab VMs are ready for configuration "
                 "before proceeding. Press enter to continue.")
