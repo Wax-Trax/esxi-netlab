@@ -23,7 +23,7 @@ def push_configs(node, lab, render, display):
     conn.open(host=esxi_host, port=tport, timeout=3)
 
     # IOS/XE/XR-specific configuration
-    if "ios" in platform or "xrv" in platform:
+    if "ios" in platform or "xrv" in platform or "freertr" in platform:
 
         # Account for IOS/XE unconfigured state
         if "ios" in platform:
@@ -58,6 +58,7 @@ def push_configs(node, lab, render, display):
             conn.write("xrvadmin".encode("ascii") + b"\r")
             time.sleep(1)
 
+        conn.write(b"\r")
         conn.write("term len 0".encode("ascii") + b"\r")
         time.sleep(0.3)
         conn.write("conf t".encode("ascii") + b"\r")
@@ -72,10 +73,62 @@ def push_configs(node, lab, render, display):
             time.sleep(0.3)
         conn.write("exit".encode("ascii") + b"\r")
         time.sleep(0.3)
-        if "ios" in platform:
+        if "ios" in platform or "freertr" in platform:
             conn.write("wr".encode("ascii") + b"\r")
             time.sleep(10)  # Time needed for IOSv writing to GRUB
             conn.write("exit".encode("ascii") + b"\r")
+        conn.close()
+
+    if "vyos" in platform:
+        conn.write(b"\r")
+        time.sleep(1)
+        conn.write("vyos".encode("ascii") + b"\r")
+        time.sleep(1)
+        conn.write("vyos".encode("ascii") + b"\r")
+        time.sleep(1)
+
+        conn.write(b"\r")
+        conn.write("configure".encode("ascii") + b"\r")
+        time.sleep(0.5)
+        for line in render[node].split("\n"):
+            conn.write(line.encode("ascii") + b"\r")
+            time.sleep(0.2)
+        conn.write("commit".encode("ascii") + b"\r")
+        time.sleep(5)
+        conn.write("set service lldp interface all".encode("ascii") + b"\r")
+        time.sleep(0.3)
+        conn.write("commit".encode("ascii") + b"\r")
+        time.sleep(5)
+        conn.write("save".encode("ascii") + b"\r")
+        time.sleep(0.5)
+        conn.write("exit".encode("ascii") + b"\r")
+        time.sleep(0.3)
+        conn.close()
+
+    if "vmx" in platform:
+        conn.write(b"\r")
+        time.sleep(1)
+        conn.write("root".encode("ascii") + b"\r")
+        time.sleep(1)
+        conn.write("Juniper".encode("ascii") + b"\r")
+        time.sleep(1)
+        conn.write("cli".encode("ascii") + b"\r")
+        time.sleep(1)
+
+        conn.write(b"\r")
+        conn.write("configure".encode("ascii") + b"\r")
+        time.sleep(0.5)
+        for line in render[node].split("\n"):
+            conn.write(line.encode("ascii") + b"\r")
+            time.sleep(0.2)
+        conn.write("set protocols lldp interface all".encode("ascii") + b"\r")
+        time.sleep(0.3)
+        conn.write("commit".encode("ascii") + b"\r")
+        time.sleep(5)
+        conn.write("save config.cfg".encode("ascii") + b"\r")
+        time.sleep(0.5)
+        conn.write("exit".encode("ascii") + b"\r")
+        time.sleep(0.3)
         conn.close()
 
     # Other platform-specifics will go below here

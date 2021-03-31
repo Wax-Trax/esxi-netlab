@@ -268,3 +268,9 @@ is to look at the code itself. I have commented most sections of the code.
 There are several lab situations I have not accounted for, but this is
 meant to be a starting point, and a way to quickly generate base labs
 so that we can get to the good stuff!
+
+### _Updates_
+
+* 2020-03-31: Added a couple additional platforms to some files
+and updated the ESXi port group creation function to include an
+incrementing VLAN for each PG for true Layer 2 separation  

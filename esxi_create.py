@@ -57,10 +57,18 @@ def esxi_create(**kwargs):
 
     vswitch = lab["lab_options"]["vswitch"]
 
+    vcounter = 10  # Put each PG in its own VLAN for true Layer 2 separation
     for link in links:
         portgroup_create.append("esxcli network vswitch standard "
                                          f"portgroup add -v {vswitch} "
                                          f"-p {labname}_{link[0]}---{link[1]}")
+
+        portgroup_create.append("esxcli network vswitch standard "
+                                         f"portgroup set -v {vcounter} "
+                                         f"-p {labname}_{link[0]}---{link[1]}")
+
+        vcounter += 1
+
         portgroup_remove.append("esxcli network vswitch standard "
                                          f"portgroup remove -v {vswitch} "
                                          f"-p {labname}_{link[0]}---{link[1]}")

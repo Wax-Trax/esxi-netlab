@@ -1,3 +1,6 @@
+{%- if "xrv" in lab["nodes"][node]["platform"] or
+       "ios" in lab["nodes"][node]["platform"] or
+       "freertr" in lab["nodes"][node]["platform"] %}
 hostname {{ lab["nodes"][node]["hostname"] }}
 !
 {%- if "xrv" in lab["nodes"][node]["platform"] %}
@@ -19,8 +22,20 @@ interface {{ iface[2] }}
  ipv4 address {{ iface[3] }}
  {%- endif %}
  {%- endif %}
+ {%- if "freertr" in lab["nodes"][node]["platform"] %}
+ {%- if "lo" not in iface[2] %}
+ cdp enable
+ lldp enable
+ {%- endif %}
+ {%- if "freertr" in lab["nodes"][node]["platform"] %}
+ vrf forwarding host
+ {%- endif %}
+ {%- if iface[3] %}
+ ipv4 address {{ iface[3] }}
+ {%- endif %}
+ {%- endif %}
  {%- if "ios" in lab["nodes"][node]["platform"] %}
- {%- if "lo" not in iface[1] %}
+ {%- if "lo" not in iface[2] %}
  lldp enable
  {%- endif %}
  {%- if iface[3] %}
@@ -33,3 +48,26 @@ interface {{ iface[2] }}
  no shutdown
 exit
 {%- endfor %}
+{%- endif %}
+
+{%- if "vyos" in lab["nodes"][node]["platform"] %}
+set system host-name {{ lab["nodes"][node]["hostname"] }}
+{%- for iface in ifaces %}
+{%- if "lo" in iface[2] %}
+set interfaces loopback lo address {{ iface[3] }}
+set interfaces loopback lo address {{ iface[4] }}
+{%- endif %}
+{%- if "lo" not in iface[2] %}
+set interfaces ethernet {{ iface[2] }} address {{ iface[3] }}
+set interfaces ethernet {{ iface[2] }} address {{ iface[4] }}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+
+{%- if "vmx" in lab["nodes"][node]["platform"] %}
+set system host-name {{ lab["nodes"][node]["hostname"] }}
+{%- for iface in ifaces %}
+set interfaces {{ iface[2] }} unit 0 family inet address {{ iface[3] }}
+set interfaces {{ iface[2] }} unit 0 family inet6 address {{ iface[4] }}
+{%- endfor %}
+{%- endif %}

@@ -25,13 +25,19 @@ def render(**kwargs):
     # Generate the set of nodes from the interface list
     nodes = sorted(set([int(node[0]) for node in interfaces]))
 
-    # Convert IOS/XE IPv4 addresses to mask format with netaddr library
+    # Convert IOS/XE/FreeRTR IPv4 addresses to mask format with netaddr library
     for iface in interfaces:
-        if "ios" in lab["nodes"][int(iface[0])]["platform"]:
+        if "ios" in lab["nodes"][int(iface[0])]["platform"] or \
+                "freertr" in lab["nodes"][int(iface[0])]["platform"]:
             ipaddr = ipnet(iface[3])
             ip = str(ipaddr.ip)
             mask = str(ipaddr.netmask)
             iface[3] = f"{ip} {mask}"
+
+        # FreeRTR puts a space between IPv6 and /
+        if "freertr" in lab["nodes"][int(iface[0])]["platform"]:
+            ipv6 = iface[4].split("/")
+            iface[4] = f"{ipv6[0]} /{ipv6[1]}"
 
     for node in nodes:
         node_interfaces = [iface for iface in interfaces
